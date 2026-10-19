@@ -40,7 +40,7 @@ async function headerBackground() {
   let d = `M 0 ${base} `;
   [60, 300, 4160, 4430].forEach((x, i) => { d += beat(x, i % 2 ? 70 : 110) + " "; });
   d += `L ${W} ${base}`;
-  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W * 2}" height="${H * 2}" viewBox="0 0 ${W} ${H}">
     <defs>
       <radialGradient id="g" cx="0.5" cy="0.38" r="0.5" gradientTransform="translate(0.5 0.38) scale(1 0.36) translate(-0.5 -0.38)">
         <stop offset="0" stop-color="#CFAE70" stop-opacity="0.22"/>
@@ -148,7 +148,7 @@ async function headerBackground() {
   const LX = M, LW = 13.4, MX = LX + LW + GAP, MW = 18.6, RX = MX + MW + GAP, RW = 13.4;
 
   // ----------------------------- BACKGROUND -----------------------------
-  const BG_H = 11.4;
+  const BG_H = 11.0;
   let c = card(LX, Y0, LW, BG_H, "Background", I.FaBrain_g);
   let y = c.top;
   const tileW = (c.cw - 0.4) / 3;
@@ -162,7 +162,7 @@ async function headerBackground() {
     text(num, { x: tx, y: y + 0.08, w: tileW, h: 1.0, fontSize: 64, bold: true, color: GOLD, align: "center", valign: "middle" });
     text(lab, { x: tx + 0.15, y: y + 1.08, w: tileW - 0.3, h: 1.3, fontSize: 18, color: WHITE, align: "center", valign: "top" });
   });
-  y += 2.7;
+  y += 2.6;
   // barriers vs physical activity
   const halfW = (c.cw - 0.3) / 2;
   [
@@ -170,18 +170,18 @@ async function headerBackground() {
     ["Physical activity", TINT, GOLD, [["FaCoins", "Low-cost"], ["FaBan", "No prescription"], ["FaMapMarkerAlt", "Flexible, anywhere"]]],
   ].forEach(([title, fill, line, items], k) => {
     const bx = c.cx + k * (halfW + 0.3);
-    rrect(bx, y, halfW, 2.5, { rectRadius: 0.2, fill: { color: fill }, line: { color: line, width: 2 } });
+    rrect(bx, y, halfW, 2.4, { rectRadius: 0.2, fill: { color: fill }, line: { color: line, width: 2 } });
     text(title, { x: bx + 0.25, y: y + 0.12, w: halfW - 0.5, h: 0.5, fontSize: 24, bold: true });
     items.forEach(([ic, lab], j) => {
-      const iy = y + 0.7 + j * 0.6;
+      const iy = y + 0.66 + j * 0.57;
       iconBadge(I[ic], bx + 0.25, iy, 0.52, WHITE, k ? GOLD : "BFBFBF");
       text(lab, { x: bx + 0.95, y: iy, w: halfW - 1.1, h: 0.52, fontSize: 24, valign: "middle" });
     });
   });
   // arrow between the two cards
-  circ(c.cx + halfW - 0.2, y + 0.9, 0.7, { fill: { color: BLACK }, line: { color: GOLD, width: 2 } });
-  text("→", { x: c.cx + halfW - 0.2, y: y + 0.9, w: 0.7, h: 0.7, fontSize: 28, bold: true, color: GOLD, align: "center", valign: "middle" });
-  y += 2.72;
+  circ(c.cx + halfW - 0.2, y + 0.85, 0.7, { fill: { color: BLACK }, line: { color: GOLD, width: 2 } });
+  text("→", { x: c.cx + halfW - 0.2, y: y + 0.85, w: 0.7, h: 0.7, fontSize: 28, bold: true, color: GOLD, align: "center", valign: "middle" });
+  y += 2.6;
   // prior evidence mini bar chart
   text("Prior evidence: activity is linked to lower depression risk", { x: c.cx, y, w: c.cw, h: 0.45, fontSize: 24, bold: true });
   y += 0.55;
@@ -192,12 +192,12 @@ async function headerBackground() {
   ];
   const peLabW = 5.0, peBarX = c.cx + peLabW + 0.15, peBarW = c.cw - peLabW - 0.15 - 2.6;
   pe.forEach(([lab, src, v, vl], i) => {
-    const py = y + i * 0.76;
+    const py = y + i * 0.7;
     text([B(lab, { fontSize: 20, breakLine: true }), R(src, { fontSize: 16, color: DARKGRAY, italic: true })], { x: c.cx, y: py - 0.02, w: peLabW, h: 0.72, align: "right" });
     rrect(peBarX, py + 0.12, peBarW * v / 25, 0.45, { rectRadius: 0.22, fill: { color: i === 2 ? RAMP.high : i === 1 ? RAMP.med : RAMP.low }, line: { color: BLACK, width: 0.75 } });
     text(vl, { x: peBarX + peBarW * v / 25 + 0.12, y: py + 0.05, w: 2.6, h: 0.6, fontSize: 20, bold: true, valign: "middle" });
   });
-  y += 2.33;
+  y += 2.15;
   rrect(c.cx, y, c.cw, 1.3, { rectRadius: 0.2, fill: { color: BLACK }, line: { color: GOLD, width: 2.5 } });
   iconBadge(I.FaSearch, c.cx + 0.25, y + 0.27, 0.75, GOLD);
   text([B("The gap: ", { color: GOLD }), R("few nationally representative studies compare how often people exercise across several dimensions of depression.", { color: WHITE })],
@@ -215,7 +215,7 @@ async function headerBackground() {
     y += h + 0.1;
   };
   qh("Q", "Question:", "Is how often U.S. adults do moderate physical activity linked to their self-reported depression and general health?", 0.85);
-  qh("H", "Hypothesis:", "More frequent moderate activity is associated with better depression-related outcomes.", 0.85);
+  qh("H", "Hypothesis:", "Since activity can lower stress and aid sleep, more frequent activity is linked to better depression outcomes.", 0.85);
   // conceptual model
   const mY = y, exW = 4.3, exH = 2.3;
   rrect(c.cx, mY, exW, exH, { rectRadius: 0.2, fill: { color: BLACK }, line: { color: BLACK, width: 0 }, shadow: shadow() });
@@ -250,7 +250,7 @@ async function headerBackground() {
     { h: 1.42, ic: "FaDatabase", title: "Data: IPUMS NHIS, 2010–2023" },
     { h: 1.38, ic: "FaWalking", title: "Exposure: moderate activity, times/week" },
     { h: 1.38, ic: "FaClipboardList", title: "Outcomes: 3 self-reported measures" },
-    { h: 2.3, ic: "FaLayerGroup", title: "Model: OLS regression vs. no activity" },
+    { h: 2.75, ic: "FaLayerGroup", title: "Model: OLS regression vs. no activity" },
   ];
   steps.forEach((st, i) => {
     if (i < steps.length - 1) s.addShape(pres.shapes.LINE, { x: c.cx + 0.45, y: y + 0.9, w: 0, h: st.h - 0.9, line: { color: GOLD, width: 4 } });
@@ -280,12 +280,13 @@ async function headerBackground() {
   sy = c.top + 1.42 + 1.38 + 1.38 + 0.6;
   const nx = tx, nw = tw;
   rrect(nx, sy, nw, 1.72, { rectRadius: 0.2, fill: { color: BLACK }, line: { color: GOLD, width: 2.5 } });
-  text([B("(3) + Socioeconomic", { color: GOLD }), R("  ★ preferred", { color: WHITE, italic: true })], { x: nx + 0.2, y: sy + 0.05, w: nw - 0.4, h: 0.42, fontSize: 18 });
+  text([B("(3) + Socioeconomic", { color: GOLD }), R(": marital status, income, poverty ratio, meds", { color: WHITE }), R("  ★ preferred", { color: GOLD, italic: true })], { x: nx + 0.2, y: sy + 0.05, w: nw - 0.4, h: 0.42, fontSize: 18 });
   rrect(nx + 0.25, sy + 0.52, nw - 0.5, 1.0, { rectRadius: 0.16, fill: { color: "5A4A2A" }, line: { color: GOLD, width: 1.5 } });
-  text([B("(2) + Demographic", { color: WHITE })], { x: nx + 0.45, y: sy + 0.56, w: nw - 0.9, h: 0.4, fontSize: 18 });
+  text([B("(2) + Demographic", { color: WHITE }), R(": age, sex, race", { color: WHITE })], { x: nx + 0.45, y: sy + 0.56, w: nw - 0.9, h: 0.4, fontSize: 18 });
   rrect(nx + 0.5, sy + 0.97, nw - 1.0, 0.45, { rectRadius: 0.12, fill: { color: GOLD }, line: { color: GOLD, width: 1 } });
   text([B("(1) Activity only")], { x: nx + 0.7, y: sy + 0.97, w: nw - 1.4, h: 0.45, fontSize: 18, valign: "middle" });
-  log("Methods", sy + 1.72, c.bottom);
+  text("How to read: each estimate is the percentage-point difference vs. inactive adults.", { x: tx, y: sy + 1.8, w: tw, h: 0.4, fontSize: 18, italic: true, color: DARKGRAY });
+  log("Methods", sy + 2.2, c.bottom);
 
   // =====================================================================
   // RESULTS
@@ -430,18 +431,18 @@ async function headerBackground() {
   // RIGHT COLUMN
   // =====================================================================
   // ----------------------------- DISCUSSION -----------------------------
-  const DH = 10.4;
+  const DH = 9.35;
   c = card(RX, Y0, RW, DH, "Discussion", I.FaComments_g);
   y = c.top;
   const insights = [
     ["FaCalendarCheck", [B("4–6 sessions a week "), R("had the largest link with fewer frequent depressive symptoms")], 0.95],
-    ["FaHeartbeat", [B("Better self-rated health "), R("at every activity level (−22.7 to −35.9 pp)")], 0.95],
-    ["FaBookOpen", [B("Fits prior work "), R("(Kandola et al., 2019; Pearce et al., 2022); plausible via less stress & better sleep")], 0.95],
+    ["FaHeartbeat", [B("Better self-rated health "), R("at every activity level (−22.7 to −35.9 pp)")], 0.6],
+    ["FaBookOpen", [B("Fits prior work "), R("(Kandola et al., 2019; Pearce et al., 2022)")], 0.6],
     ["FaBalanceScale", [B("Socioeconomic status matters: "), R("welfare receipt consistently predicted worse outcomes")], 0.95],
-    ["FaMinusCircle", [B("No link with depression level: "), R("all CIs include 0 (R² = 0.038)")], 0.95],
+    ["FaMinusCircle", [B("No link with depression level: "), R("all CIs include 0 (R² = 0.038)")], 0.6],
   ];
   insights.forEach(([ic, runs, h]) => {
-    iconBadge(I[ic], c.cx, y + 0.08, 0.72, TINT, GOLD);
+    iconBadge(I[ic], c.cx, y + h / 2 - 0.36, 0.72, TINT, GOLD);
     text(runs, { x: c.cx + 0.95, y, w: c.cw - 0.95, h, fontSize: 24, valign: "middle" });
     y += h + 0.18;
   });
@@ -461,20 +462,23 @@ async function headerBackground() {
   log("Discussion", y, c.bottom);
 
   // ----------------------------- CONCLUSIONS -----------------------------
-  const CY = Y0 + DH + 0.5, CH = 7.6;
+  const CY = Y0 + DH + 0.5, CH = 8.5;
   c = card(RX, CY, RW, CH, "Conclusions", I.FaLightbulb_g);
   y = c.top;
   const msgs = [
     ["Being moderately active 4–6 times a week was linked to a lower chance of feeling depressed often.", 0.95],
     ["Any regular moderate activity – even 1–3 times a week – was linked to better self-rated health.", 0.95],
-    ["Exercise is not a cure: it was not linked to how severe depression feels, so it should complement, not replace, treatment.", 1.3],
+    ["Activity was not linked to how strongly depression is felt, so it is a low-cost complement to care, not a cure.", 0.95],
   ];
   msgs.forEach(([m, h], i) => {
     text(String(i + 1), { x: c.cx, y: y - 0.12, w: 0.9, h: 1.0, fontSize: 66, bold: true, color: GOLD, align: "center", valign: "top" });
     text(m, { x: c.cx + 1.05, y, w: c.cw - 1.05, h, fontSize: 24, bold: i === 0 });
     y += h + 0.12;
   });
-  y += 0.05;
+  rrect(c.cx, y, c.cw, 1.2, { rectRadius: 0.2, fill: { color: TINT }, line: { color: GOLD, width: 2 } });
+  text([B("Big picture: "), R("as depression rises and care stays hard to reach, regular moderate activity is a low-cost tool worth promoting.")],
+    { x: c.cx + 0.25, y: y + 0.1, w: c.cw - 0.5, h: 1.0, fontSize: 24, valign: "middle" });
+  y += 1.4;
   rrect(c.cx, y, c.cw, 2.05, { rectRadius: 0.2, fill: { color: BLACK }, line: { color: GOLD, width: 2.5 }, shadow: shadow() });
   circ(c.cx + 0.25, y + 0.25, 0.8, { fill: { color: "2E2E2E" }, line: { color: GOLD, width: 2 } });
   img(I.FaRocket_g, c.cx + 0.45, y + 0.45, 0.4);
