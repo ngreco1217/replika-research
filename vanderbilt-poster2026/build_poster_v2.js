@@ -1,14 +1,16 @@
 // Builds the 48" x 36" Vanderbilt research poster, v2 (editable .pptx).
-// Usage: NODE_PATH=<dir with pptxgenjs, react, react-dom, react-icons, sharp> node build_poster_v2.js <out.pptx>
+// Usage: NODE_PATH=<dir with pptxgenjs, react, react-dom, react-icons, sharp, qrcode> node build_poster_v2.js <out.pptx>
 const path = require("path");
 const pptxgen = require("pptxgenjs");
 const React = require("react");
 const ReactDOMServer = require("react-dom/server");
 const sharp = require("sharp");
 const fa = require("react-icons/fa");
+const QRCode = require("qrcode");
 
 const OUT = process.argv[2] || path.join(__dirname, "Greco_NHIS_Poster_48x36_v2.pptx");
 const LOGO = path.join(__dirname, "vanderbilt_v.png");
+const LINKEDIN = "https://www.linkedin.com/in/nicolas-greco-8a6b80349";
 
 // ---------- palette ----------
 const BLACK = "1C1C1C";
@@ -522,7 +524,12 @@ async function headerBackground() {
     "7. Alzahrani, H., et al. (2024). J. Adv. Trends Med. Res., 862–869.",
   ];
   text([B("Selected references", { fontSize: 18, color: BLACK, breakLine: true })].concat(refs.map((r, i) => R(r, { breakLine: i < refs.length - 1 }))),
-    { x: c.cx, y, w: c.cw, h: 2.4, fontSize: 16, color: DARKGRAY, paraSpaceAfter: 1 });
+    { x: c.cx, y, w: c.cw - 2.2, h: 2.4, fontSize: 16, color: DARKGRAY, paraSpaceAfter: 1 });
+  // LinkedIn QR code beside the references
+  const qrSize = 1.85, qrX = c.cx + c.cw - qrSize;
+  const qrPng = await QRCode.toBuffer(LINKEDIN, { errorCorrectionLevel: "M", margin: 1, width: 600, color: { dark: "#1C1C1C", light: "#FFFFFF" } });
+  s.addImage({ data: "image/png;base64," + qrPng.toString("base64"), x: qrX, y: y + 0.02, w: qrSize, h: qrSize, altText: "QR code linking to Nicolas Greco's LinkedIn profile" });
+  text("Connect on LinkedIn", { x: qrX - 0.3, y: y + qrSize + 0.05, w: qrSize + 0.6, h: 0.33, fontSize: 16, bold: true, align: "center", valign: "middle" });
   log("Acknowledgements", y + 2.4, c.bottom);
 
   await pres.writeFile({ fileName: OUT });
