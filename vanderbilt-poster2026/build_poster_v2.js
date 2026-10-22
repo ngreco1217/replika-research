@@ -86,6 +86,7 @@ async function headerBackground() {
   const text = (t, o) => s.addText(t, Object.assign({ isTextBox: true, fontFace: FONT, color: BLACK, margin: 0, valign: "top" }, o));
   const B = (t, extra) => ({ text: t, options: Object.assign({ bold: true }, extra || {}) });
   const R = (t, extra) => ({ text: t, options: Object.assign({}, extra || {}) });
+  const SUP = (t, extra) => ({ text: t, options: Object.assign({ superscript: true }, extra || {}) }); // numbered citation
   const shadow = () => ({ type: "outer", blur: 10, offset: 3, angle: 90, color: "000000", opacity: 0.16 });
   const rrect = (x, y, w, h, o) => s.addShape(pres.shapes.ROUNDED_RECTANGLE, Object.assign({ x, y, w, h, rectRadius: 0.15 }, o));
   const circ = (x, y, d, o) => s.addShape(pres.shapes.OVAL, Object.assign({ x, y, w: d, h: d }, o));
@@ -153,14 +154,14 @@ async function headerBackground() {
   let y = c.top;
   const tileW = (c.cw - 0.4) / 3;
   [
-    ["21M", "U.S. adults had a major depressive episode in 2021 (8.3%; NIMH)"],
-    ["280M", "people live with depression worldwide (WHO)"],
-    ["17.2%", "of U.S. adults aged 18–25 had depression in 2020, up from 10.3% in 2015 (Goodwin et al., 2022)"],
+    ["21M", [R("U.S. adults had a major depressive episode in 2021 (8.3%)"), SUP("1")]],
+    ["280M", [R("people live with depression worldwide"), SUP("2")]],
+    ["17.2%", [R("of U.S. adults aged 18–25 had depression in 2020, up from 10.3% in 2015"), SUP("3")]],
   ].forEach(([num, lab], i) => {
     const tx = c.cx + i * (tileW + 0.2);
     rrect(tx, y, tileW, 2.45, { rectRadius: 0.2, fill: { color: BLACK }, line: { color: BLACK, width: 0 }, shadow: shadow() });
     text(num, { x: tx, y: y + 0.08, w: tileW, h: 1.0, fontSize: 64, bold: true, color: GOLD, align: "center", valign: "middle" });
-    text(lab, { x: tx + 0.15, y: y + 1.08, w: tileW - 0.3, h: 1.3, fontSize: 18, color: WHITE, align: "center", valign: "top" });
+    text(lab.map((q) => ({ text: q.text, options: Object.assign({ color: WHITE }, q.options) })), { x: tx + 0.15, y: y + 1.08, w: tileW - 0.3, h: 1.3, fontSize: 18, color: WHITE, align: "center", valign: "top" });
   });
   y += 2.6;
   // barriers vs physical activity
@@ -186,14 +187,14 @@ async function headerBackground() {
   text("Prior evidence: activity is linked to lower depression risk", { x: c.cx, y, w: c.cw, h: 0.45, fontSize: 24, bold: true });
   y += 0.55;
   const pe = [
-    ["Any activity", "Kandola et al., 2019", 17, "17% lower odds"],
-    ["Half the recommended dose", "Pearce et al., 2022", 18, "18% lower risk"],
-    ["Full recommended dose", "Pearce et al., 2022", 25, "25% lower risk"],
+    ["Any activity", "4", 17, "17% lower odds"],
+    ["Half the recommended dose", "5", 18, "18% lower risk"],
+    ["Full recommended dose", "5", 25, "25% lower risk"],
   ];
   const peLabW = 5.0, peBarX = c.cx + peLabW + 0.15, peBarW = c.cw - peLabW - 0.15 - 2.6;
   pe.forEach(([lab, src, v, vl], i) => {
     const py = y + i * 0.7;
-    text([B(lab, { fontSize: 20, breakLine: true }), R(src, { fontSize: 16, color: DARKGRAY, italic: true })], { x: c.cx, y: py - 0.02, w: peLabW, h: 0.72, align: "right" });
+    text([B(lab), SUP(src, { bold: true })], { x: c.cx, y: py + 0.04, w: peLabW, h: 0.6, fontSize: 20, align: "right", valign: "middle" });
     rrect(peBarX, py + 0.12, peBarW * v / 25, 0.45, { rectRadius: 0.22, fill: { color: i === 2 ? RAMP.high : i === 1 ? RAMP.med : RAMP.low }, line: { color: BLACK, width: 0.75 } });
     text(vl, { x: peBarX + peBarW * v / 25 + 0.12, y: py + 0.05, w: 2.6, h: 0.6, fontSize: 20, bold: true, valign: "middle" });
   });
@@ -247,7 +248,7 @@ async function headerBackground() {
   y = c.top;
   const tx = c.cx + 1.15, tw = c.cw - 1.15;
   const steps = [
-    { h: 1.42, ic: "FaDatabase", title: "Data: IPUMS NHIS, 2010–2023" },
+    { h: 1.42, ic: "FaDatabase", title: [B("Data: IPUMS NHIS"), SUP("6", { bold: true }), B(", 2010–2023")] },
     { h: 1.38, ic: "FaWalking", title: "Exposure: moderate activity, times/week" },
     { h: 1.38, ic: "FaClipboardList", title: "Outcomes: 3 self-reported measures" },
     { h: 2.75, ic: "FaLayerGroup", title: "Model: OLS regression vs. no activity" },
@@ -330,7 +331,7 @@ async function headerBackground() {
   const fmt = (v) => (v < 0 ? "−" : "") + Math.abs(v);
   const rowKeys = ["low", "med", "high"], rowLabs = [["Low", "1–3×/wk"], ["Medium", "4–6×/wk"], ["High", "7+×/wk"]];
   const labW = 2.75, plotX0 = c.cx + 0.55 + labW + 0.2, plotW = c.cx + c.cw - plotX0, pg = 0.4, pw = (plotW - 2 * pg) / 3;
-  const titleY = y, plotTop = y + 0.62, rowH = 1.9, plotH = rowH * 3;
+  const titleY = y, plotTop = y + 0.62, rowH = 1.72, plotH = rowH * 3;
   text("Activity level", { x: c.cx - 2.2 + 0.25, y: plotTop + plotH / 2 - 0.25, w: 4.4, h: 0.5, fontSize: 20, bold: true, align: "center", valign: "middle", rotate: 270 });
   rowKeys.forEach((k, r) => {
     const ly = plotTop + r * rowH + rowH / 2 - 0.42;
@@ -366,7 +367,13 @@ async function headerBackground() {
   y += 0.45;
   text([R("◄ ", { color: "8C6A2F" }), R("shaded side = less likely than inactive adults", { italic: true }), R(" · each panel has its own scale", { italic: true })],
     { x: plotX0, y, w: plotW, h: 0.38, fontSize: 18, color: DARKGRAY, align: "center" });
-  y += 1.2;
+  y += 0.45;
+  const takeaway = (body) => {
+    rrect(c.cx, y, c.cw, 0.85, { rectRadius: 0.15, fill: { color: TINT }, line: { color: GOLD, width: 1.5 } });
+    text([B("Takeaway: ", { color: "8C6A2F" }), R(body)], { x: c.cx + 0.25, y, w: c.cw - 0.5, h: 0.85, fontSize: 20, valign: "middle" });
+  };
+  takeaway("better general health at every activity level; fewer frequent depressive symptoms only at 4–6 and 7+ sessions a week.");
+  y += 1.25;
 
   // ---- Figure 2: 1,000-dot unit chart of the sample ----
   text([B("Figure 2. "), R("Who was studied: sample by activity level (N = 332,521)")], { x: c.cx, y, w: c.cw, h: 0.5, fontSize: 24 });
@@ -400,7 +407,9 @@ async function headerBackground() {
     circ(lx, y + 0.12, 0.5, { fill: { color: RAMP[k] }, line: { color: BLACK, width: 1 } });
     text([B(lab, { fontSize: 18, breakLine: true }), R(n + " · ", { fontSize: 18 }), B(pct, { fontSize: 18 })], { x: lx + 0.6, y, w: lgW - 0.65, h: 0.8, valign: "middle" });
   });
-  y += 1.5;
+  y += 0.9;
+  takeaway("most adults were inactive or low-activity; only 12.2% reached the 4–6 times-a-week level linked to fewer depressive symptoms.");
+  y += 1.25;
 
   // ---- Table 1 ----
   text([B("Table 1. "), R("Specification 3 estimates, percentage points [95% CI]")], { x: c.cx, y, w: c.cw, h: 0.5, fontSize: 24 });
@@ -437,8 +446,8 @@ async function headerBackground() {
   const insights = [
     ["FaCalendarCheck", [B("4–6 sessions a week "), R("had the largest link with fewer frequent depressive symptoms")], 0.95],
     ["FaHeartbeat", [B("Better self-rated health "), R("at every activity level (−22.7 to −35.9 pp)")], 0.6],
-    ["FaBookOpen", [B("Fits prior work "), R("(Kandola et al., 2019; Pearce et al., 2022)")], 0.6],
-    ["FaBalanceScale", [B("Socioeconomic status matters: "), R("welfare receipt consistently predicted worse outcomes")], 0.95],
+    ["FaBookOpen", [B("Fits prior work "), R("linking activity to lower depression risk"), SUP("4,5")], 0.6],
+    ["FaBalanceScale", [B("Socioeconomic status matters: "), R("welfare receipt consistently predicted worse outcomes"), SUP("7")], 0.95],
     ["FaMinusCircle", [B("No link with depression level: "), R("all CIs include 0 (R² = 0.038)")], 0.6],
   ];
   insights.forEach(([ic, runs, h]) => {
@@ -504,16 +513,17 @@ async function headerBackground() {
   ], { x: c.cx + 0.2, y: y + 0.08, w: c.cw - 0.4, h: 1.8, valign: "middle" });
   y += 2.1;
   const refs = [
-    "Alzahrani, H., et al. (2024). J. Adv. Trends Med. Res., 862–869.",
-    "Blewett, L. A., et al. (2025). IPUMS Health Surveys: NHIS, v8.1. doi.org/10.18128/D071.V8.1",
-    "Goodwin, R. D., et al. (2022). Am. J. Prev. Med., 63(5), 726–733.",
-    "Kandola, A., et al. (2019). Neurosci. Biobehav. Rev., 107, 525–539.",
-    "Pearce, M., et al. (2022). JAMA Psychiatry, 79(6), 550–559.",
-    "NIMH (n.d.). Major Depression. · WHO (2025). Depressive disorder (depression).",
+    "1. NIMH (n.d.). Major Depression.",
+    "2. WHO (2025). Depressive disorder (depression).",
+    "3. Goodwin, R. D., et al. (2022). Am. J. Prev. Med., 63(5), 726–733.",
+    "4. Kandola, A., et al. (2019). Neurosci. Biobehav. Rev., 107, 525–539.",
+    "5. Pearce, M., et al. (2022). JAMA Psychiatry, 79(6), 550–559.",
+    "6. Blewett, L. A., et al. (2025). IPUMS Health Surveys: NHIS, v8.1. doi.org/10.18128/D071.V8.1",
+    "7. Alzahrani, H., et al. (2024). J. Adv. Trends Med. Res., 862–869.",
   ];
   text([B("Selected references", { fontSize: 18, color: BLACK, breakLine: true })].concat(refs.map((r, i) => R(r, { breakLine: i < refs.length - 1 }))),
-    { x: c.cx, y, w: c.cw, h: 2.1, fontSize: 16, color: DARKGRAY, paraSpaceAfter: 1 });
-  log("Acknowledgements", y + 2.1, c.bottom);
+    { x: c.cx, y, w: c.cw, h: 2.4, fontSize: 16, color: DARKGRAY, paraSpaceAfter: 1 });
+  log("Acknowledgements", y + 2.4, c.bottom);
 
   await pres.writeFile({ fileName: OUT });
   console.log("wrote", OUT);
